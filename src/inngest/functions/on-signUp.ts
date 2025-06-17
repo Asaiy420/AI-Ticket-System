@@ -21,7 +21,7 @@ export const onSignUp = inngest.createFunction(
 
       await step.run("send-welcome-email", async () => {
         const subject = `Welcome to the AI Ticketing System`;
-        const message = `Hello ${user.email}, thanks for signing up! We're excited to have you on board.`;
+        const message = `Hello ${user.email}, thanks for signing up! We're very excited to have you on board. Please let us know if you have any questions or need any assistance.`;
 
         await sendMail(user.email, subject, message);
       });
