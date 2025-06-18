@@ -3,7 +3,7 @@ import User from "../models/user.model";
 import bcrypt from "bcryptjs";
 import { inngest } from "../inngest/client";
 import jwt from "jsonwebtoken";
-import "dotenv/config"
+import "dotenv/config";
 
 export const SignUp = async (req: Request, res: Response): Promise<void> => {
   const { email, password, skills = [] } = req.body;
@@ -47,15 +47,14 @@ export const SignUp = async (req: Request, res: Response): Promise<void> => {
     );
 
     res.status(201).json({
-        token,
-        user: {
-            _id: user._id,
-            email: user.email,
-            role: user.role,
-            skills: user.skills,
-        }
-    })
-
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        skills: user.skills,
+      },
+    });
   } catch (error) {
     console.error("Error in SignUp controller:", error);
     res.status(500).json({ message: "Internal server error" });
