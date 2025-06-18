@@ -133,3 +133,40 @@ export const Logout = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error) {}
 };
+
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { skills = [], role, email } = req.body;
+
+  try {
+    if (req.user && typeof req.user !== "string" && req.user.role) {
+      if (req.user?.role !== "admin") {
+        res
+          .status(403)
+          .json({ message: "You are not authorized to perform this action" });
+        return;
+      }
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    await User.updateOne(
+      { email },
+      { skills: skills.length ? skills : user.skills, role }
+    );
+
+    res.status(200).json({
+      message: "User updated successfully!",
+    });
+  } catch (error) {
+    console.error("Error in updateUser controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
