@@ -45,6 +45,17 @@ export const SignUp = async (req: Request, res: Response): Promise<void> => {
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
+
+    res.status(201).json({
+        token,
+        user: {
+            _id: user._id,
+            email: user.email,
+            role: user.role,
+            skills: user.skills,
+        }
+    })
+
   } catch (error) {
     console.error("Error in SignUp controller:", error);
     res.status(500).json({ message: "Internal server error" });
