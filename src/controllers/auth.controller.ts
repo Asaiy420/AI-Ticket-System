@@ -82,7 +82,7 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      res.status(400).json({ error: "Invalid Credentials" });
+      res.status(401).json({ error: "Invalid Credentials" });
       return;
     }
 
@@ -109,5 +109,27 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const Logout = async (req: Request, res: Response): Promise<void> => {
-  res.send("Logout");
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
+      if (err) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      res.json({ message: "Logout successful" });
+    });
+  } catch (error) {}
 };
