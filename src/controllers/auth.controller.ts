@@ -171,7 +171,7 @@ export const updateUser = async (
   }
 };
 
-
+// fetch users
 export const getUsers = async (req:Request, res:Response):Promise<void> => {
     try{
       if(req.user && typeof req.user !== "string" && req.user.role){
