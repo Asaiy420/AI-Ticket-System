@@ -19,13 +19,14 @@ export const onTicketCreate = inngest.createFunction(
         }
         return ticketObject;
       });
-
+      // pipeline for updating ticket status
       await step.run<any>("update-ticket-status", async () => {
         await Ticket.findByIdAndUpdate(ticket._id, { status: "WAITING" });
       });
 
       const aiResponse = await analyzeTicket(ticket);
 
+        // pipeline for updating ticket priority and related skills
       const getSkills = await step.run<any>("ai-processing", async () => {
         let skills = [];
         if (aiResponse) {
@@ -64,6 +65,12 @@ export const onTicketCreate = inngest.createFunction(
         });
         return user;
       });
+
+      // TODO: send email to user after their ticket has been assigned
+      await step.run<any>("send-email-notification", async () => {
+
+      })
+
     } catch (error) {}
   }
 );
