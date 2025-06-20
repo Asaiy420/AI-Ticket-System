@@ -3,6 +3,7 @@ import Ticket from "../../models/ticket.model.js";
 import { inngest } from "../client.js";
 import analyzeTicket from "../../utils/ai.js";
 import User from "../../models/user.model.js";
+import { sendMail } from "../../utils/mailer.js";
 
 export const onTicketCreate = inngest.createFunction(
   { id: "on-ticket-create", retries: 2 },
@@ -26,7 +27,7 @@ export const onTicketCreate = inngest.createFunction(
 
       const aiResponse = await analyzeTicket(ticket);
 
-        // pipeline for updating ticket priority and related skills
+      // pipeline for updating ticket priority and related skills
       const getSkills = await step.run<any>("ai-processing", async () => {
         let skills = [];
         if (aiResponse) {
@@ -66,11 +67,22 @@ export const onTicketCreate = inngest.createFunction(
         return user;
       });
 
-      // TODO: send email to user after their ticket has been assigned
       await step.run<any>("send-email-notification", async () => {
+        if (moderator) {
+          const finalTicket = await Ticket.findById(ticket._id);
+          await sendMail(
+            moderator.email,
+            "Ticket Assigned",
+            `A new ticket is assigned to you ${finalTicket?.title}`
+          );
+        }
+      });
 
-      })
+      return {success: true}
 
-    } catch (error) {}
+    } catch (e) {
+      console.error("Error when sending notification", e)
+      return {success : false};
+    }
   }
 );
