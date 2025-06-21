@@ -34,7 +34,10 @@ export const createTicket = async (
         createdBy: newTicket.createdBy?.toString(),
       },
     });
-    res.status(201).json(newTicket);
+    res.status(201).json({
+      message: "Ticket created successfully",
+      ticket: newTicket,
+    });
     return;
   } catch (error) {
     console.error("Error when creating ticket", error);
