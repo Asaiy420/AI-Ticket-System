@@ -10,6 +10,8 @@ export interface ITicket extends mongoose.Document {
   deadline: Date;
   helpfulNotes: string;
   realtedSkills: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ticketSchema = new mongoose.Schema<ITicket>(
