@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface ITicket extends mongoose.Document {
+  
   title: string;
   description: string;
   status: string;
