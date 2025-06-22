@@ -1,10 +1,11 @@
 import {Router} from "express";
-import {createTicket, getAllTickets} from "../controllers/ticket.controller";
+import {createTicket, getAllTickets, getTicketById} from "../controllers/ticket.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/all", authenticate, getAllTickets);
+router.get("/", authenticate, getAllTickets);
+router.get("/:id", authenticate, getTicketById);
 router.post("/create",authenticate,createTicket);
 
 
