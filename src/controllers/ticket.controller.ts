@@ -1,6 +1,7 @@
 import { inngest } from "../inngest/client";
 import Ticket, { ITicket } from "../models/ticket.model";
 import { Request, Response } from "express";
+import User from "../models/user.model";
 
 export const createTicket = async (
   req: Request,
@@ -73,6 +74,39 @@ export const getAllTickets = async (
     return;
   } catch (error) {
     console.error("Error fetching tickets:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getTicketById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    let ticket;
+
+    if (req.user && typeof req.user !== "string" && req.user.role !== "user") {
+      ticket = await Ticket.findById(id).populate("assignedTo", [
+        "email",
+        "_id",
+      ]);
+    } else if (req.user && typeof req.user !== "string") {
+      ticket = await Ticket.findOne({
+        createdBy: req.user._id,
+        _id: id,
+      }).select("title description status createdAt");
+    }
+
+    if (!ticket) {
+      res.status(404).json({ error: "Cannot find the ticket" });
+      return;
+    }
+
+    res.status(200).json(ticket);
+    return;
+  } catch (error) {
+    console.error("Error in getTicketById controller", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
